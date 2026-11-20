@@ -1,7 +1,7 @@
 package contracts.product
 
-//import org.springframework.cloud.contract.spec.Contract
-import sh.stubborn.contract.spec.Contract
+import org.springframework.cloud.contract.spec.Contract
+//import sh.stubborn.contract.spec.Contract
 
 Contract.make {
     request {
