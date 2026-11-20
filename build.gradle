@@ -61,6 +61,10 @@ contracts {
 	packageWithBaseClasses = "com.algaworks.algashop.product.catalog.contract.base"
 }
 
+tasks.named('contractTest') {
+	useJUnitPlatform()
+}
+
 tasks.named('test') {
 	useJUnitPlatform()
 }
