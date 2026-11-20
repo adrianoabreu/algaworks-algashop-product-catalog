@@ -3,7 +3,9 @@ plugins {
 	id 'maven-publish'
 	id 'org.springframework.boot' version '4.0.9'
 	id 'io.spring.dependency-management' version '1.1.7'
-	id 'sh.stubborn.contract' version '0.2.2'
+	id 'org.springframework.cloud.contract' version '4.3.0'
+	id 'org.asciidoctor.jvm.convert' version '4.0.5'
+
 }
 
 group = 'com.algaworks.algashop'
@@ -30,13 +32,15 @@ publishing {
 }
 
 ext {
-	set('stubbornContractVersion', "0.2.2")
+	set('springCloudVersion', "2025.1.4")
+	set('snippetsDir', file("build/generated-snippets"))
 }
 
 configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
 	}
+	asciidoctorExt
 }
 
 dependencies {
@@ -46,14 +50,16 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-validation-test'
 	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
-	testImplementation 'sh.stubborn:stubborn-contract-starter-verifier'
+	testImplementation 'org.springframework.cloud:spring-cloud-starter-contract-verifier'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	testCompileOnly 'org.projectlombok:lombok'
+	asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
+	testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
 }
 
 dependencyManagement {
 	imports {
-		mavenBom "sh.stubborn:stubborn-contract-dependencies:${stubbornContractVersion}"
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
 	}
 }
 
@@ -63,8 +69,21 @@ contracts {
 
 tasks.named('contractTest') {
 	useJUnitPlatform()
+	outputs.dir snippetsDir
+	useJUnitPlatform()
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+asciidoctor {
+	dependsOn contractTest
+	inputs.dir snippetsDir
+	attributes 'snippets': snippetsDir
+	sources {
+		include 'index.adoc'
+	}
+	baseDirFollowsSourceFile()
+	outputDir = file("build/docs/asciidoc")
 }
