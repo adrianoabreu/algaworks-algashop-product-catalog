@@ -76,7 +76,14 @@ public class ProductBase {
                 .thenReturn(createdProductId);
 
         Mockito.when(productQueryService.findById(createdProductId))
-                .thenReturn(ProductDetailOutputTestDataBuilder.aProduct().inStock(false).build());
+                .thenReturn(ProductDetailOutputTestDataBuilder.aProduct()
+                        .inStock(false)
+                        .description("A Gamer Notebook!")
+                        .category(CategoryMinimalOutput.builder()
+                                .id(UUID.fromString("f5ab7a1e-37da-41e1-892b-a1d38275c2f2"))
+                                .name("Notebook")
+                                .build())
+                        .build());
     }
 
     private void mockFilterProducts() {
